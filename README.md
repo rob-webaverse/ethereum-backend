@@ -12,7 +12,7 @@ To validate/replicate/sync you don't need any keys.
 
 ## Quick Install
 
-Once you've installed all basic building blocks, you're just a few steps away from starting to develop your application. To clone and run this repository excute these command using command line:
+Once you've installed all basic building blocks, you're just a few steps away from starting to develop your application. To clone and run this repository execute these command using a command line:
 
 
 ```bash
@@ -61,7 +61,7 @@ $ npm stop
 
 ### Doesn't Re-compile automatically
 
-The application won't hot reload itself automatically if there is any changes to any file. You have re-run application to effect new changes.
+The application won't hot reload itself automatically if changes are made to any files while it's running. You have to re-run the application to reflect those changes.
 
 ```bash
 
@@ -79,7 +79,7 @@ $ npm start
 ## Development Environment Setup
 
   
-> Preffered tool for development is [VSCode](https://code.visualstudio.com/download)
+> :memo: We prefer using [VSCode](https://code.visualstudio.com/download) for development, so the below notes reflect that toolset; however you should be able to adapt this guide to apply to any other IDEs.
   
 ### Directory Structure
 
@@ -91,29 +91,33 @@ $ npm start
 
 ```
 
+---
+
 ### Setup ESLint
 
 
-* Go to your extensions tab and search for `ESLINT`
-  
-![enter image description here](https://res.cloudinary.com/practicaldev/image/fetch/s--gWL807Xl--/c_limit,f_auto,fl_progressive,q_auto,w_880/https://thepracticaldev.s3.amazonaws.com/i/9rmkgbk7nio6ravjm0rx.PNG)
+* Within VSCode, go to your extensions tab and search for `ESLINT`
+
+![enter image description here](/img/VSCodeESLintSetup.png)
+
+OR From the command line:
 
 ```bash
-
 npm install eslint -g
-
 eslint --init
-
 ```
+
+---
+
 ### Setup Cutom Host
 
-Please follow this [tutorial](https://github.com/abeersaqib/webaverse-docs/blob/main/setup-custom-host.md) to setup custom host.
+Please follow this [tutorial](setup-custom-host.md) to setup custom host.
 
 ---
 
 ## Commands
 
-Here is how to bootstrap a mainnet validation node:
+**To bootstrap a mainnet validation node:**
 
 ```bash
 
@@ -127,7 +131,7 @@ geth --datadir mainnet --http --http.addr 172.31.2.5 --http.corsdomain '*' --syn
 
 ```
 
-`static-nodes-mainnet.json`` has some bootstrap nodes listed so you should be able to start syncing from those. Your chain will be "reorganized" a lot while you sync up, which is normal.
+`static-nodes-mainnet.json` has some bootstrap nodes listed so you should be able to start syncing from those. Your chain will be "reorganized" a lot while you sync up, which is normal.
 
 ---
 
@@ -143,28 +147,31 @@ There are currently 4 chains that we use:
 `mainnetsidechain`: http://ethereum1.exokit.org:8545 chainId 1338 
 `rinkebysidechain`: http://ethereum1.exokit.org:8546 chainId 1337
 
-You can put these details into MetaMask directly to interact with the chains. There are no gas fees.
+You can use these details with MetaMask to interat directly with the chains. 
+> :grey_exclamation:There are no gas fees.
 
 These networks also have HTTPS proxy support for secure frontend development:
 
 https://mainnetsidechain.exokit.org
 https://rinkebysidechain.exokit.org
 
-Note that the port on these is the standard HTTPS port, `443`.
+> :memo: Note that the port on these is the standard HTTPS port, `443`.
 
 ## Contracts
 
 The contracts we deploy onto all chains are available at https://github.com/webaverse/contracts.
 
+---
+
 ## Note: Atomic saves
 
 Replication is accomplished by having multiple nodes mine on that address at the same time.
 
-`geth` does _not_ stream blocks to disk eagerly. A system crash will lose blocks on that node, though other miners will not be affected.
+> :warning: `geth` does _not_ stream blocks to disk eagerly. A system crash will lose blocks on that node, though other miners will not be affected.
 
-## Restarting geth Servers
+### Restarting geth Servers
 
-Therefore it is important that any restart of these nodes follows the correct order:
+It is important that any restart of these nodes follows the correct order:
 
 ```
 for (i in [2, 3, 1]) { // order matters
@@ -177,7 +184,9 @@ for (i in [2, 3, 1]) { // order matters
 
 ## How Transfers Work
 
-There are two parallel blockchains for each Ethereum source of truth. There are two sources of truth (mainnet and rinkeby) and they do not interact. Therefore there are 4 chains.
+### Chains
+
+There are two parallel blockchains for each Ethereum source of truth. There are two sources of truth (mainnet and rinkeby) and they do not interact. Therefore (2 chains x 2 sources) there are 4 chains.
 
 ```
 mainnet
@@ -186,12 +195,26 @@ rinkeby
 rinkebysidechain
 ```
 
+---
+
+### Common Case
+
 The common case is `mainnet` (ETH) and `mainnetsidechain` (our `geth`).
 
-They talk to each other via a signature scheme enforced in the contracts. Basically, each contract is deployed twice, once on each chain. We mint on the side chain usually (enforced by constructor arguments). Transfers occur via assignment of the token away from the user to the contract's address, logging a deposit event on the sidechain. The client then asks the signing server to read the sidechain, and sign off on the fact that this deposit ocurred. If successful the signature is sent back to the client. The client then takes that signature and submits it in a mainnet transaction. This must be confirmed by the user in metamask.
+These talk to each other via a signature scheme enforced in the contracts. Basically, each contract is deployed twice, once on each chain. We mint on the side chain usually (enforced by constructor arguments). Transfers occur via assignment of the token away from the user to the contract's address, logging a deposit event on the sidechain. The client then asks the signing server to read the sidechain and sign off on the fact that this deposit occurred. If successful the signature is sent back to the client. The client then takes that signature and submits it in a mainnet transaction. This should be confirmed by the user in Metamask.
 
-If the user accepts, the mainnet should accept teh signature and assign ownership of the token to the user on mainnet.
+#### User Accepts
 
-If the user does not accept then the token is stuck in between. The way to fix this is to continue the transfer from the part where you ask the signing server for the signature.
+If the user accepts, the mainnet should accept the signature and assign ownership of the token to the user on mainnet.
 
-The way back from mainnet to mainnetsidechain is the same procedure, except with contracts switched. You would first write to the mainnet to move the mainnet token to the mainnet contract (requires user confirmation). Once this succeeds you can ask the signing server for the signature (uses a differnt endpoint than last time). Then that signature can be written to the sidechain to have the contract give you back the token that you initially deposited. At this point we are back where we started and the procedure could be repeated.
+---
+
+#### User Rejects
+
+If the user does not accept then the token is stuck in between. The way to fix this is to continue the transfer from the point where you asked the signing server for the signature.
+
+### Reversal
+
+The way back from mainnet to mainnetsidechain is the same procedure, except with contracts switched. You would first write to the mainnet to move the mainnet token to the mainnet contract (requires user confirmation). Once this succeeds you can ask the signing server for the signature (uses a different endpoint than last time). Then that signature can be written to the sidechain to have the contract return the token that you initially deposited. At this point you are back where you started and the procedure can be repeated.
+
+---
