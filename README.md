@@ -108,7 +108,7 @@ $ npm start
 
 * Within VSCode, go to your extensions tab and search for `ESLINT`
 
-![enter image description here](/img/VSCodeESLintSetup.png)
+![VSCode ESLint Setup Example](/img/VSCodeESLintSetup.png?raw=true)
 
 OR From the command line:
 
