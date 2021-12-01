@@ -50,6 +50,16 @@ $ npm start
 ```
 This command will run your application in background using [forever](https://www.npmjs.com/package/forever)
 
+To view the status of the running app run:
+
+```bash
+
+# View running forever tasks
+
+$ sudo forever list
+
+```
+
 >You can stop this app by running this command:
 ```bash
 
