@@ -10,14 +10,6 @@ To validate/replicate/sync you don't need any keys.
 
 ---
 
- ## Before You Begin
- 
-Before you begin we recommend you read about the basic building blocks that assemble an application:
-* Git - [Download & Install Git](https://git-scm.com/downloads). OSX and Linux machines typically have this already installed.
-* Node.js - Start by going through [Node.js Official Website](http://nodejs.org/) and this [StackOverflow Thread](http://stackoverflow.com/questions/2353818/how-do-i-get-started-with-node-js), which should get you going with the Node.js platform in no time.
-
----
-
 ## Quick Install
 
 Once you've installed all basic building blocks, you're just a few steps away from starting to develop your application. To clone and run this repository excute these command using command line:
