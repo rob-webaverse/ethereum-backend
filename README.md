@@ -155,6 +155,7 @@ There are currently 4 chains that we use:
 - `rinkebysidechain` (our Geth nodes)
 
 `mainnetsidechain`: http://ethereum1.exokit.org:8545 chainId 1338 
+
 `rinkebysidechain`: http://ethereum1.exokit.org:8546 chainId 1337
 
 You can use these details with MetaMask to interat directly with the chains. 
@@ -173,7 +174,7 @@ The contracts we deploy onto all chains are available at https://github.com/weba
 
 ---
 
-## Note: Atomic saves
+## Atomic saves
 
 Replication is accomplished by having multiple nodes mine on that address at the same time.
 
@@ -222,6 +223,8 @@ If the user accepts, the mainnet should accept the signature and assign ownershi
 #### User Rejects
 
 If the user does not accept then the token is stuck in between. The way to fix this is to continue the transfer from the point where you asked the signing server for the signature.
+
+---
 
 ### Reversal
 
